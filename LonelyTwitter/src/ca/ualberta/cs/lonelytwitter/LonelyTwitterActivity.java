@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import ca.ualberta.cs.lonelytwitter.data.GsonDataManager;
 import ca.ualberta.cs.lonelytwitter.data.IDataManager;
+
 
 public class LonelyTwitterActivity extends Activity {
 
@@ -19,10 +22,15 @@ public class LonelyTwitterActivity extends Activity {
 	private EditText bodyText;
 
 	private ListView oldTweetsList;
-
+	
 	private ArrayList<Tweet> tweets;
 
 	private ArrayAdapter<Tweet> tweetsViewAdapter;
+	
+	private Summary mySummary;
+	
+	private int sum = 0;
+	private int count = 0;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -30,6 +38,7 @@ public class LonelyTwitterActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
+		mySummary = new Summary();
 
 		dataManager = new GsonDataManager(this);
 
@@ -65,6 +74,34 @@ public class LonelyTwitterActivity extends Activity {
 		tweets.clear();
 		tweetsViewAdapter.notifyDataSetChanged();
 		dataManager.saveTweets(tweets);
+	}
+	
+	public void summa(View V){
+		createSummary();
+	}
+
+	private void createSummary(){
+		Intent intent = new Intent(this, SummaryActivity.class);
+		intent.putExtra("sc", getAveNum());
+		intent.putExtra("lc", getAveLength());
+		startActivity(intent);
+		
+	}
+
+	private long getAveNum(){
+		
+		return (tweets.size());
+	}
+
+	private long getAveLength(){
+		for (int i = 0; i < tweets.size(); i++)
+		{	
+			String temp = tweets.get(i).getTweetBody();
+			sum = sum + temp.length();
+			count++;
+		}
+		
+		return (sum/count);
 	}
 
 }
